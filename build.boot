@@ -2,9 +2,16 @@
  :source-paths #{"src/"}
  :dependencies '[;; ---- clj ----
                  [org.clojure/clojure "1.10.0-alpha5"]
+                 [aero "1.1.3"]
                  [com.datomic/datomic-free "0.9.5697"]
+                 [http-kit "2.3.0"]
                  ;; ---- cljc ----
                  [com.stuartsierra/component "0.3.2"]
+                 [bidi "2.1.3"]
+                 [rum "0.11.2"]
+                 [datascript "0.16.6"]
+                 [datascript-schema "0.2.1"]
+                 [com.taoensso/sente "1.12.0"]
                  ;; ---- dev ----
                  [org.clojure/tools.reader "1.3.0" :scope "test"]
                  [samestep/boot-refresh "0.1.0" :scope "test"]
