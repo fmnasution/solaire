@@ -3,6 +3,9 @@
 #?(:clj (defprotocol IDatomic
           (tx-report-queue [this])))
 
+(defprotocol IDatascript
+  (tx-listener [this callback]))
+
 (defprotocol IConfig
   (fetch-config [this]))
 
@@ -14,3 +17,9 @@
 
 #?(:clj (defprotocol IWebsocketAdapter
           (server-adapter [this])))
+
+(defprotocol ISource
+  (source-chan [this]))
+
+(defprotocol ISink
+  (sink-chan [this]))
