@@ -9,7 +9,7 @@
                  [org.clojure/tools.namespace "0.3.0-alpha4"]
                  ;; ---- cljc ----
                  [org.clojure/core.async "0.4.474" :scope "provided"]
-                 [com.stuartsierra/component "0.3.2" :scope "provided"]
+                 [com.stuartsierra/component "0.3.2"]
                  [bidi "2.1.3" :scope "provided"]
                  [rum "0.11.2" :scope "provided"]
                  [datascript "0.16.6" :scope "provided"]
