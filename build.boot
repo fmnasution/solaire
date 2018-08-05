@@ -4,6 +4,7 @@
                  [org.clojure/clojure "1.10.0-alpha5"]
                  [aero "1.1.3"]
                  [com.datomic/datomic-free "0.9.5697"]
+                 [io.rkn/conformity "0.5.1"]
                  [http-kit "2.3.0"]
                  ;; ---- cljc ----
                  [org.clojure/core.async "0.4.474"]
@@ -12,6 +13,7 @@
                  [rum "0.11.2"]
                  [datascript "0.16.6"]
                  [datascript-schema "0.2.1"]
+                 [cljs-ajax "0.7.4"]
                  [com.taoensso/sente "1.12.0"]
                  ;; ---- cljs -----
                  [org.clojure/clojurescript "1.10.339"]
@@ -26,6 +28,9 @@
 
 (deftask dev-repl
   []
+  (merge-env!
+   :source-paths #{"test/"}
+   :resource-paths #{"resources/"})
   (comp
    (repl :server true)
    (watch)

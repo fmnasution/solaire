@@ -1,5 +1,6 @@
 (ns solaire.components.aero
   (:require
+   [clojure.java.io :as io]
    [com.stuartsierra.component :as c]
    [aero.core :refer [read-config]]
    [solaire.components.protocols :as cprt]))
@@ -13,7 +14,7 @@
   (start [{:keys [source option value] :as this}]
     (if (some? value)
       this
-      (assoc this :value (read-config source option))))
+      (assoc this :value (read-config (io/resource source) option))))
   (stop [{:keys [value] :as this}]
     (if (nil? value)
       this
@@ -39,7 +40,7 @@
 
   cprt/IConfig
   (fetch-config [{:keys [config config-key]}]
-    (config-key (cprt/fetch-config config))))
+    (get (cprt/fetch-config config) config-key )))
 
 (defn make-config-cursor
   [{:keys [config-key]}]

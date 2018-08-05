@@ -40,5 +40,6 @@
     (:routes this)))
 
 (defn make-ring-router
-  []
-  (map->RingRouter {}))
+  [{:keys [routes resources]}]
+  (map->RingRouter {:routes    routes
+                    :resources resources}))

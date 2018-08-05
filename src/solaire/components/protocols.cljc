@@ -1,5 +1,10 @@
 (ns solaire.components.protocols)
 
+(defprotocol IDatomStore
+  (transact
+    [this tx-data tx-meta]
+    [thix tx-data]))
+
 #?(:clj (defprotocol IDatomic
           (tx-report-queue [this])))
 

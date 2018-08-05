@@ -25,7 +25,13 @@
   cprt/IDatascript
   (tx-listener [{:keys [conn]} callback]
     (dtssch/listen-on-schema-change! conn callback)
-    #(dtssch/unlisten-schema-change! conn)))
+    #(dtssch/unlisten-schema-change! conn))
+
+  cprt/IDatomStore
+  (transact [{:keys [conn]} tx-data tx-meta]
+    (dts/transact conn tx-data tx-meta))
+  (transact [{:keys [conn]} tx-data]
+    (dts/transact conn tx-data)))
 
 (defn make-datascript
   [{:keys [schema]}]
