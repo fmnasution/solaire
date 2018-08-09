@@ -9,26 +9,33 @@
 ;; ring router
 ;; ===============================================================
 
-(defn- create-handler
-  [routes resources]
-  (if (some? resources)
-    (make-handler routes resources)
-    (make-handler routes)))
+(defn- compute-routes
+  [{:keys [prefix] :as component}]
+  (if-let [routes (not-empty (into {}
+                                   (comp
+                                    (map val)
+                                    (filter #(satisfies? b/RouteProvider %))
+                                    (map b/routes))
+                                   component))]
+    [prefix routes]
+    (throw (ex-info "No endpoint found" {}))))
 
-(defrecord RingRouter [routes resources middleware handler]
+(defrecord RingRouter [prefix routes middleware handler]
   c/Lifecycle
-  (start [{:keys [routes resources handler middleware] :as this}]
+  (start [{:keys [middleware handler] :as this}]
     (if (some? handler)
       this
       (let [wrapper (if (nil? middleware)
                       identity
                       (cprt/wrapper middleware))
-            handler (create-handler routes resources)]
-        (assoc this :handler (wrapper handler)))))
+            routes  (compute-routes this)]
+        (assoc this
+               :routes  routes
+               :handler (wrapper (make-handler routes))))))
   (stop [{:keys [handler] :as this}]
     (if (nil? handler)
       this
-      (assoc this :handler nil)))
+      (assoc this :routes nil :handler nil)))
 
   cprt/IRequestHandler
   (request-handler [this]
@@ -39,6 +46,22 @@
     (:routes this)))
 
 (defn make-ring-router
-  [{:keys [routes resources]}]
-  (map->RingRouter {:routes    routes
-                    :resources resources}))
+  [{:keys [prefix]}]
+  (map->RingRouter {:prefix prefix}))
+
+;; ===============================================================
+;; endpoint
+;; ===============================================================
+
+(defrecord RingEndpoint [routes]
+  c/Lifecycle
+  (start [this] this)
+  (stop [this] this)
+
+  b/RouteProvider
+  (routes [this]
+    (:routes this)))
+
+(defn make-ring-endpoint
+  [{:keys [routes]}]
+  (map->RingEndpoint {:routes routes}))
