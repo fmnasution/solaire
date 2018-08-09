@@ -10,11 +10,10 @@
 ;; ===============================================================
 
 (defn- create-handler
-  [component routes resources]
-  (let [apply-closure (fn [closure]
-                        (fn [handler]
-                          (handler closure)))]
-    (make-handler routes (comp (apply-closure component) resources))))
+  [routes resources]
+  (if (some? resources)
+    (make-handler routes resources)
+    (make-handler routes)))
 
 (defrecord RingRouter [routes resources middleware handler]
   c/Lifecycle
@@ -24,7 +23,7 @@
       (let [wrapper (if (nil? middleware)
                       identity
                       (cprt/wrapper middleware))
-            handler (create-handler this routes resources)]
+            handler (create-handler routes resources)]
         (assoc this :handler (wrapper handler)))))
   (stop [{:keys [handler] :as this}]
     (if (nil? handler)
