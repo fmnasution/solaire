@@ -30,7 +30,7 @@
  '[metosin.bat-test :refer [bat-test]])
 
 (def +version+
-  "0.1.3-SNAPSHOT")
+  "0.1.4-SNAPSHOT")
 
 (bootlaces! +version+)
 
