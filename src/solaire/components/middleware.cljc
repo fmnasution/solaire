@@ -27,14 +27,17 @@
                      (map as-middleware))
                     entries)))
 
-(defrecord Middleware [entries]
+(defrecord Middleware [entries middleware]
   c/Lifecycle
   (start [this] this)
   (stop [this] this)
 
   cprt/IMiddleware
   (wrapper [this]
-    (compose this entries)))
+    (comp (compose this entries)
+       (if (nil? middleware)
+         identity
+         (cprt/wrapper middleware)))))
 
 (defn make-middleware
   [{:keys [entries]}]
