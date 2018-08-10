@@ -10,7 +10,7 @@
 
 (defrecord WebServer [config handler middleware server]
   c/Lifecycle
-  (start [{:keys [config handler server] :as this}]
+  (start [this]
     (if (some? server)
       this
       (let [wrapper (if (nil? middleware)
@@ -19,7 +19,7 @@
             handler (cprt/request-handler handler)]
         (assoc this :server (run-server (wrapper handler)
                                         (cprt/fetch-config config))))))
-  (stop [{:keys [server] :as this}]
+  (stop [this]
     (if (nil? server)
       this
       (do (server :timeout 100)

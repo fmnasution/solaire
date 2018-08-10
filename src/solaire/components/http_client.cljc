@@ -36,11 +36,11 @@
 
 (defrecord HttpClient [routes option-fn caller]
   c/Lifecycle
-  (start [{:keys [routes option-fn caller] :as this}]
+  (start [this]
     (if (some? caller)
       this
       (assoc this :caller (make-caller this))))
-  (stop [{:keys [caller] :as this}]
+  (stop [this]
     (if (nil? caller)
       this
       (assoc this :caller nil)))

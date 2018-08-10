@@ -11,12 +11,12 @@
 
 (defrecord WebsocketServer [web-server option sente-map]
   c/Lifecycle
-  (start [{:keys [web-server option sente-map] :as this}]
+  (start [this]
     (if (some? sente-map)
       this
       (let [server-adapter (cprt/server-adapter web-server)]
         (assoc this :sente-map (make-channel-socket! server-adapter option)))))
-  (stop [{:keys [option sente-map] :as this}]
+  (stop [this]
     (if (nil? sente-map)
       this
       (do (a/close! (:ch-recv sente-map))
@@ -24,7 +24,7 @@
 
   cprt/ISource
   (source-chan [this]
-    (get-in this [:sente-map :ch-recv])))
+    (:ch-recv sente-map)))
 
 (defn make-websocket-server
   [{:keys [option]}]

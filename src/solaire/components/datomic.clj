@@ -22,14 +22,14 @@
 
 (defrecord Datomic [config conn]
   c/Lifecycle
-  (start [{:keys [config conn] :as this}]
+  (start [this]
     (if (some? conn)
       this
       (let [{:keys [uri norm-path]} (cprt/fetch-config config)
             conn                    (create-conn! uri)]
         (ensure-conforms! conn norm-path)
         (assoc this :conn conn))))
-  (stop [{:keys [conn] :as this}]
+  (stop [this]
     (if (nil? conn)
       this
       (do (dtm/release conn)

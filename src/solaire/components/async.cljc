@@ -34,11 +34,11 @@
 
 (defrecord ItemDispatcher [config item-chan]
   c/Lifecycle
-  (start [{:keys [config item-chan] :as this}]
+  (start [this]
     (if (some? item-chan)
       this
       (assoc this :item-chan (new-chan (cprt/fetch-config config)))))
-  (stop [{:keys [item-chan] :as this}]
+  (stop [this]
     (if (nil? item-chan)
       this
       (do (a/close! item-chan)
@@ -75,7 +75,7 @@
 
 (defrecord ItemListener [callback stop-chan]
   c/Lifecycle
-  (start [{:keys [callback stop-chan] :as this}]
+  (start [this]
     (if (some? stop-chan)
       this
       (let [stop-chan (a/chan)
@@ -87,7 +87,7 @@
               (callback this item)
               (recur))))
         (assoc this :stop-chan stop-chan))))
-  (stop [{:keys [stop-chan] :as this}]
+  (stop [this]
     (if (nil? stop-chan)
       this
       (do (a/close! stop-chan)
@@ -138,15 +138,7 @@
                           ex-handler
                           started?]
   c/Lifecycle
-  (start [{:keys [kind
-                  parallelism
-                  to
-                  updater-fn
-                  from
-                  close-both?
-                  ex-handler
-                  started?]
-           :as   this}]
+  (start [this]
     (if started?
       this
       (let [parallelism (or parallelism 1)
@@ -156,7 +148,7 @@
             close-both? (if (nil? close-both?) true close-both?)]
         (pipeline! kind parallelism to-chan updater from-chan close-both? ex-handler)
         (assoc this :started? true))))
-  (stop [{:keys [started?] :as this}]
+  (stop [this]
     (if-not started?
       this
       (assoc this :started? false))))

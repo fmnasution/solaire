@@ -10,11 +10,11 @@
 
 (defrecord WebsocketClient [uri option sente-map]
   c/Lifecycle
-  (start [{:keys [sente-map] :as this}]
+  (start [this]
     (if (some? sente-map)
       this
       (assoc this :sente-map (make-channel-socket! uri option))))
-  (stop [{:keys [sente-map] :as this}]
+  (stop [this]
     (if (nil? sente-map)
       this
       (do (sente/chsk-disconnect! (:chsk sente-map))
@@ -23,7 +23,7 @@
 
   cprt/ISource
   (source-chan [this]
-    (get-in this [:sente-map :ch-recv])))
+    (:ch-recv sente-map)))
 
 (defn make-websocket-client
   [{:keys [uri option]}]

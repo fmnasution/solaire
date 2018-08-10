@@ -11,13 +11,13 @@
 
 (defrecord Datascript [schema conn]
   c/Lifecycle
-  (start [{:keys [conn] :as this}]
+  (start [this]
     (if (some? conn)
       this
       (let [schema (if (map? schema) schema {})
             conn   (dts/create-conn schema)]
         (assoc this :conn conn))))
-  (stop [{:keys [conn] :as this}]
+  (stop [this]
     (if (nil? conn)
       this
       (assoc this :conn nil)))

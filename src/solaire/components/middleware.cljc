@@ -33,7 +33,7 @@
   (stop [this] this)
 
   cprt/IMiddleware
-  (wrapper [{:keys [entries] :as this}]
+  (wrapper [this]
     (compose this entries)))
 
 (defn make-middleware

@@ -9,11 +9,11 @@
 
 (defrecord DatascriptMonitor [datascript callback stopper]
   c/Lifecycle
-  (start [{:keys [datascript callback stopper] :as this}]
+  (start [this]
     (if (some? stopper)
       this
       (assoc this :stopper (cprt/tx-listener datascript callback))))
-  (stop [{:keys [stopper] :as this}]
+  (stop [this]
     (if (nil? stopper)
       this
       (do (stopper)

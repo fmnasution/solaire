@@ -10,7 +10,7 @@
 ;; ===============================================================
 
 (defn- compute-routes
-  [{:keys [prefix] :as component}]
+  [component prefix]
   (if-let [routes (not-empty (into {}
                                    (comp
                                     (map val)
@@ -22,17 +22,17 @@
 
 (defrecord RingRouter [prefix routes middleware handler]
   c/Lifecycle
-  (start [{:keys [middleware handler] :as this}]
+  (start [this]
     (if (some? handler)
       this
       (let [wrapper (if (nil? middleware)
                       identity
                       (cprt/wrapper middleware))
-            routes  (compute-routes this)]
+            routes  (compute-routes this prefix)]
         (assoc this
                :routes  routes
                :handler (wrapper (make-handler routes))))))
-  (stop [{:keys [handler] :as this}]
+  (stop [this]
     (if (nil? handler)
       this
       (assoc this :routes nil :handler nil)))
@@ -59,8 +59,7 @@
   (stop [this] this)
 
   b/RouteProvider
-  (routes [this]
-    (:routes this)))
+  (routes [this] routes))
 
 (defn make-ring-endpoint
   [{:keys [routes]}]

@@ -9,7 +9,7 @@
 
 (defrecord DatomicMonitor [datomic callback active?_]
   c/Lifecycle
-  (start [{:keys [datomic callback active?_] :as this}]
+  (start [this]
     (if (some? active?_)
       this
       (let [active?_ (atom true)
@@ -18,7 +18,7 @@
           (while @active?_
             (callback (.take queue))))
         (assoc this :active?_ active?_))))
-  (stop [{:keys [active?_] :as this}]
+  (stop [this]
     (if (nil? active?_)
       this
       (do (reset! active?_ false)

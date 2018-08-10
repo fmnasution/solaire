@@ -11,11 +11,11 @@
 
 (defrecord Config [source option value]
   c/Lifecycle
-  (start [{:keys [source option value] :as this}]
+  (start [this]
     (if (some? value)
       this
       (assoc this :value (read-config (io/resource source) option))))
-  (stop [{:keys [value] :as this}]
+  (stop [this]
     (if (nil? value)
       this
       (assoc this :value nil)))
@@ -39,8 +39,8 @@
   (stop [this] this)
 
   cprt/IConfig
-  (fetch-config [{:keys [config config-key]}]
-    (get (cprt/fetch-config config) config-key )))
+  (fetch-config [this]
+    (get (cprt/fetch-config config) config-key)))
 
 (defn make-config-cursor
   [{:keys [config-key]}]
