@@ -9,29 +9,15 @@
 ;; ring router
 ;; ===============================================================
 
-(defn- compute-routes
-  [component prefix]
-  (if-let [routes (not-empty (into {}
-                                   (comp
-                                    (map val)
-                                    (filter #(satisfies? b/RouteProvider %))
-                                    (map b/routes))
-                                   component))]
-    [prefix routes]
-    (throw (ex-info "No endpoint found" {}))))
-
-(defrecord RingRouter [prefix routes middleware handler]
+(defrecord RingRouter [routes middleware handler]
   c/Lifecycle
   (start [this]
     (if (some? handler)
       this
       (let [wrapper (if (nil? middleware)
                       identity
-                      (cprt/wrapper middleware))
-            routes  (compute-routes this prefix)]
-        (assoc this
-               :routes  routes
-               :handler (wrapper (make-handler routes))))))
+                      (cprt/wrapper middleware))]
+        (assoc this :handler (wrapper (make-handler routes))))))
   (stop [this]
     (if (nil? handler)
       this
@@ -48,23 +34,5 @@
 (defn make-ring-router
   [option]
   (-> option
-      (select-keys [:prefix])
-      (map->RingRouter)))
-
-;; ===============================================================
-;; endpoint
-;; ===============================================================
-
-(defrecord RingEndpoint [routes]
-  c/Lifecycle
-  (start [this] this)
-  (stop [this] this)
-
-  b/RouteProvider
-  (routes [this] routes))
-
-(defn make-ring-endpoint
-  [option]
-  (-> option
       (select-keys [:routes])
-      (map->RingEndpoint)))
+      (map->RingRouter)))
