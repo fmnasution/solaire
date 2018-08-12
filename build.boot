@@ -2,7 +2,7 @@
  :source-paths #{"src/"}
  :dependencies '[;; ---- clj ----
                  [org.clojure/clojure "1.10.0-alpha5"]
-                 [aero "1.1.3" :scope "provided"]
+                 [com.google.guava/guava "26.0-jre"]
                  [com.datomic/datomic-free "0.9.5697" :scope "provided"]
                  [io.rkn/conformity "0.5.1" :scope "provided"]
                  [http-kit "2.3.0" :scope "provided"]
@@ -22,12 +22,14 @@
                  [org.clojure/tools.reader "1.3.0" :scope "test"]
                  [samestep/boot-refresh "0.1.0" :scope "test"]
                  [metosin/bat-test "0.4.0" :scope "test"]
-                 [adzerk/bootlaces "0.1.13" :scope "test"]])
+                 [adzerk/bootlaces "0.1.13" :scope "test"]
+                 [crisptrutski/boot-cljs-test "0.3.5-SNAPSHOT" :scope "test"]])
 
 (require
  '[samestep.boot-refresh :refer [refresh]]
  '[adzerk.bootlaces :refer [bootlaces! build-jar push-snapshot push-release]]
- '[metosin.bat-test :refer [bat-test]])
+ '[metosin.bat-test :refer [bat-test]]
+ '[crisptrutski.boot-cljs-test :refer [test-cljs]])
 
 (def +version+
   "0.1.4-SNAPSHOT")
@@ -54,4 +56,5 @@
    (repl :server true)
    (watch)
    (refresh)
-   (bat-test)))
+   (bat-test)
+   (test-cljs)))
