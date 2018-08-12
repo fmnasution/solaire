@@ -20,7 +20,7 @@
           (assoc this :stopper nil)))))
 
 (defn make-datascript-monitor
-  [{:keys [callback]}]
-  (c/using
-   (map->DatascriptMonitor {:callback callback})
-   [:datascript]))
+  [option]
+  (-> option
+      (select-keys [:callback])
+      (map->DatascriptMonitor)))

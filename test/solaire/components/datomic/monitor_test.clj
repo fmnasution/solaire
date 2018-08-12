@@ -12,7 +12,9 @@
    (tmck/make-mock-datomic)
 
    :datomic-monitor
-   (cdtmmnt/make-datomic-monitor (:datomic-monitor m))))
+   (c/using
+    (cdtmmnt/make-datomic-monitor (:datomic-monitor m))
+    [:datomic])))
 
 (deftest datomic-monitor-component
   (testing "datomic monitor lifecycle"

@@ -25,7 +25,7 @@
           (assoc this :active?_ nil)))))
 
 (defn make-datomic-monitor
-  [{:keys [callback]}]
-  (c/using
-   (map->DatomicMonitor {:callback callback})
-   [:datomic]))
+  [option]
+  (-> option
+      (select-keys [:callback])
+      (map->DatomicMonitor)))

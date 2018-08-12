@@ -11,9 +11,6 @@
 (defprotocol IDatascript
   (tx-listener [this callback]))
 
-(defprotocol IConfig
-  (fetch-config [this]))
-
 #?(:clj (defprotocol IRequestHandler
           (request-handler [this])))
 

@@ -25,7 +25,7 @@
   (start [this]
     (if (some? conn)
       this
-      (let [{:keys [uri norm-path]} (cprt/fetch-config config)
+      (let [{:keys [uri norm-path]} config
             conn                    (create-conn! uri)]
         (ensure-conforms! conn norm-path)
         (assoc this :conn conn))))
@@ -46,7 +46,7 @@
     (dtm/transact conn tx-data)))
 
 (defn make-datomic
-  []
-  (c/using
-   (map->Datomic {})
-   [:config]))
+  [option]
+  (-> option
+      (select-keys [:config])
+      (map->Datomic)))

@@ -13,7 +13,9 @@
    (tmck/make-mock-datascript {})
 
    :datascript-monitor
-   (cdtsmnt/make-datascript-monitor (:datascript-monitor m))))
+   (c/using
+    (cdtsmnt/make-datascript-monitor (:datascript-monitor m))
+    [:datascript])))
 
 (deftest datascript-monitor-component
   (testing "datascript monitor lifecycle"

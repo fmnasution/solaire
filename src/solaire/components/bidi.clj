@@ -46,8 +46,10 @@
     (:routes this)))
 
 (defn make-ring-router
-  [{:keys [prefix]}]
-  (map->RingRouter {:prefix prefix}))
+  [option]
+  (-> option
+      (select-keys [:prefix])
+      (map->RingRouter)))
 
 ;; ===============================================================
 ;; endpoint
@@ -62,5 +64,7 @@
   (routes [this] routes))
 
 (defn make-ring-endpoint
-  [{:keys [routes]}]
-  (map->RingEndpoint {:routes routes}))
+  [option]
+  (-> option
+      (select-keys [:routes])
+      (map->RingEndpoint)))

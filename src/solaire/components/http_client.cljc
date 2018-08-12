@@ -50,6 +50,7 @@
     (:routes this)))
 
 (defn make-http-client
-  [{:keys [routes option-fn]}]
-  (map->HttpClient {:routes    routes
-                    :option-fn option-fn}))
+  [option]
+  (-> option
+      (select-keys [:routes :option-fn])
+      (map->HttpClient)))

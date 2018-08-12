@@ -12,7 +12,9 @@
    (tmck/make-mock-web-server (:web-server m))
 
    :websocket-server
-   (csnt/make-websocket-server (:websocket-server m))))
+   (c/using
+    (csnt/make-websocket-server (:websocket-server m))
+    [:web-server])))
 
 (deftest websocket-server-component
   (testing "websocket server lifecycle"

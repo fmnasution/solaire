@@ -37,7 +37,7 @@
   (start [this]
     (if (some? item-chan)
       this
-      (assoc this :item-chan (new-chan (cprt/fetch-config config)))))
+      (assoc this :item-chan (new-chan config))))
   (stop [this]
     (if (nil? item-chan)
       this
@@ -53,10 +53,10 @@
     (:item-chan this)))
 
 (defn make-item-dispatcher
-  []
-  (c/using
-   (map->ItemDispatcher {})
-   [:config]))
+  [option]
+  (-> option
+      (select-keys [:config])
+      (map->ItemDispatcher)))
 
 ;; ===============================================================
 ;; item listener
@@ -94,8 +94,10 @@
           (assoc this :stop-chan nil)))))
 
 (defn make-item-listener
-  [{:keys [callback]}]
-  (map->ItemListener {:callback callback}))
+  [option]
+  (-> option
+      (select-keys [:callback])
+      (map->ItemListener)))
 
 ;; ===============================================================
 ;; item pipeliner
@@ -119,15 +121,21 @@
                       from-chan
                       close-both?)
 
-    :blocking
-    (a/pipeline-blocking parallelism
-                         to-chan
-                         updater
-                         from-chan
-                         close-both?
-                         ex-handler)
+    #?@(:clj [:blocking
+              (a/pipeline-blocking parallelism
+                                   to-chan
+                                   updater
+                                   from-chan
+                                   close-both?
+                                   ex-handler)])
 
-    (pipeline! :normal parallelism to-chan updater from-chan close-both? ex-handler)))
+    (pipeline! :normal
+               parallelism
+               to-chan
+               updater
+               from-chan
+               close-both?
+               ex-handler)))
 
 (defrecord ItemPipeliner [kind
                           parallelism
@@ -154,12 +162,7 @@
       (assoc this :started? false))))
 
 (defn make-item-pipeliner
-  [{:keys [kind parallelism updater-fn close-both? ex-handler]}]
-  (c/using
-   (map->ItemPipeliner {:kind        kind
-                        :parallelism parallelism
-                        :updater-fn  updater-fn
-                        :close-both? close-both?
-                        :ex-handler  ex-handler
-                        :started?    false})
-   [:to :from]))
+  [option]
+  (-> option
+      (select-keys [:kind :parallelism :updater-fn :close-both? :ex-handler])
+      (map->ItemPipeliner)))

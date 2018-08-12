@@ -26,7 +26,7 @@
     (:routes this)))
 
 (defn make-html-router
-  [{:keys [routes callback default-location]}]
-  (map->HtmlRouter {:routes           routes
-                    :callback         callback
-                    :default-location default-location}))
+  [option]
+  (-> option
+      (select-keys [:routes :callback :default-location])
+      (map->HtmlRouter)))

@@ -14,7 +14,7 @@
     (if (some? node)
       this
       (let [node (gdom/getRequiredElement id)]
-        (rum/mount (constructor this) node)
+        (r/mount (constructor this) node)
         (assoc this :node node))))
   (stop [this]
     (if (nil? node)
@@ -23,6 +23,7 @@
           (assoc this :node nil)))))
 
 (defn make-html-element
-  [{:keys [id constructor]}]
-  (map->HtmlElement {:id          id
-                     :constructor constructor}))
+  [option]
+  (-> option
+      (select-keys [:id :constructor])
+      (map->HtmlElement)))

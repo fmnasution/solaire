@@ -27,7 +27,7 @@
     (:ch-recv sente-map)))
 
 (defn make-websocket-server
-  [{:keys [option]}]
-  (c/using
-   (map->WebsocketServer {:option option})
-   [:web-server]))
+  [option]
+  (-> option
+      (select-keys [:option])
+      (map->WebsocketServer)))

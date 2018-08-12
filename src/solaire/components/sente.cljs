@@ -1,7 +1,8 @@
 (ns solaire.components.sente
   (:require
+   [cljs.core.async :as a]
    [com.stuartsierra.component :as c]
-   [taoensso.sente :refer [make-channel-socket!]]
+   [taoensso.sente :as sente :refer [make-channel-socket!]]
    [solaire.components.protocols :as cprt]))
 
 ;; ===============================================================
@@ -26,6 +27,7 @@
     (:ch-recv sente-map)))
 
 (defn make-websocket-client
-  [{:keys [uri option]}]
-  (map->WebsocketClient {:uri    uri
-                         :option option}))
+  [option]
+  (-> option
+      (select-keys [:uri :option])
+      (map->WebsocketClient)))

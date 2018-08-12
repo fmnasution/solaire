@@ -40,5 +40,7 @@
          (cprt/wrapper middleware)))))
 
 (defn make-middleware
-  [{:keys [entries]}]
-  (map->Middleware {:entries entries}))
+  [option]
+  (-> option
+      (select-keys [:entries])
+      (map->Middleware)))

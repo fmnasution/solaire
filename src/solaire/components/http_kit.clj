@@ -17,8 +17,7 @@
                       identity
                       (cprt/wrapper middleware))
             handler (cprt/request-handler handler)]
-        (assoc this :server (run-server (wrapper handler)
-                                        (cprt/fetch-config config))))))
+        (assoc this :server (run-server (wrapper handler) config)))))
   (stop [this]
     (if (nil? server)
       this
@@ -26,7 +25,7 @@
           (assoc this :server nil)))))
 
 (defn make-web-server
-  []
-  (c/using
-   (map->WebServer {})
-   [:config :handler]))
+  [option]
+  (-> option
+      (select-keys [:config])
+      (map->WebServer)))

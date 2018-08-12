@@ -34,5 +34,7 @@
     (dts/transact conn tx-data)))
 
 (defn make-datascript
-  [{:keys [schema]}]
-  (map->Datascript {:schema schema}))
+  [option]
+  (-> option
+      (select-keys [:schema])
+      (map->Datascript)))

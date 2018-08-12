@@ -2,29 +2,13 @@
   (:require
    [com.stuartsierra.component :as c]
    [datascript.core :as dts]
-   [taoensso.sente.server-adapters.http-kit :refer [get-sch-adapter]]
    [solaire.components.protocols :as cprt]
-   #?@(:clj [[datomic.api :as dtm]]))
+   #?@(:clj [[datomic.api :as dtm]
+             [taoensso.sente.server-adapters.http-kit
+              :refer [get-sch-adapter]]]))
   #?(:clj
      (:import
       [java.util.concurrent LinkedBlockingQueue])))
-
-;; ===============================================================
-;; mock config
-;; ===============================================================
-
-(defrecord MockConfig [config]
-  c/Lifecycle
-  (start [this] this)
-  (stop [this] this)
-
-  cprt/IConfig
-  (fetch-config [this]
-    (:config this)))
-
-(defn make-mock-config
-  [{:keys [config]}]
-  (map->MockConfig {:config config}))
 
 ;; ===============================================================
 ;; mock handler
@@ -57,8 +41,10 @@
             (get-sch-adapter))))
 
 #?(:clj (defn make-mock-web-server
-          [{:keys [server]}]
-          (map->MockWebServer {:server server})))
+          [option]
+          (-> option
+              (select-keys [:server])
+              (map->MockWebServer))))
 
 ;; ===============================================================
 ;; mock datomic
@@ -132,19 +118,20 @@
 
   cprt/IDatomStore
   (transact [{:keys [callback db_]} tx-data tx-meta]
-    (future
-      (loop [tx-report (loop []
-                         (let [old-db    @db_
-                               tx-report (dts/with old-db tx-data tx-meta)
-                               new-db    (:db-after tx-report)]
-                           (if (compare-and-set! db_ old-db new-db)
-                             tx-report
-                             (recur))))]
-        (callback tx-report)
-        tx-report)))
+    (let [tx-report (loop []
+                      (let [old-db    @db_
+                            tx-report (dts/with old-db tx-data tx-meta)
+                            new-db    (:db-after tx-report)]
+                        (if (compare-and-set! db_ old-db new-db)
+                          tx-report
+                          (recur))))]
+      (when (some? callback) (callback tx-report))
+      (atom tx-report)))
   (transact [this tx-data]
     (cprt/transact this tx-data {})))
 
 (defn make-mock-datascript
-  [{:keys [schema]}]
-  (map->MockDatascript {:schema schema}))
+  [option]
+  (-> option
+      (select-keys [:schema])
+      (map->MockDatascript)))
