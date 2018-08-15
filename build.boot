@@ -32,7 +32,7 @@
  '[crisptrutski.boot-cljs-test :refer [test-cljs]])
 
 (def +version+
-  "0.1.5-SNAPSHOT")
+  "0.1.6-SNAPSHOT")
 
 (bootlaces! +version+)
 
