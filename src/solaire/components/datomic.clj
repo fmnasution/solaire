@@ -11,28 +11,29 @@
 ;; ===============================================================
 
 (defn- create-conn!
-  [uri]
+  [{:keys [uri]}]
   (dtm/create-database uri)
   (dtm/connect uri))
 
 (defn- ensure-conforms!
-  [conn path]
-  (when-let [norm-map (some-> path (jio/resource) (slurp) (read-string))]
+  [conn {:keys [norm-path]}]
+  (when-let [norm-map (some-> norm-path (jio/resource) (slurp) (read-string))]
     (dtmcnf/ensure-conforms conn norm-map)))
 
-(defrecord Datomic [config conn]
+(defrecord Datomic [config temporary? conn]
   c/Lifecycle
   (start [this]
     (if (some? conn)
       this
-      (let [{:keys [uri norm-path]} config
-            conn                    (create-conn! uri)]
-        (ensure-conforms! conn norm-path)
+      (let [conn (create-conn! config)]
+        (ensure-conforms! conn config)
         (assoc this :conn conn))))
   (stop [this]
     (if (nil? conn)
       this
       (do (dtm/release conn)
+          (when temporary?
+            (dtm/delete-database (:uri config)))
           (assoc this :conn nil))))
 
   cprt/IDatomic
@@ -49,4 +50,12 @@
   [option]
   (-> option
       (select-keys [:config])
+      (assoc :temporary? false)
+      (map->Datomic)))
+
+(defn make-temp-datomic
+  [option]
+  (-> option
+      (select-keys [:config])
+      (assoc :temporary? true)
       (map->Datomic)))
